@@ -5,7 +5,7 @@ import pandas as pd
 import os
 
 CLIP_MODEL_NAME = "clip-ViT-L-14"
-model = SentenceTransformer(CLIP_MODEL_NAME)
+# model = SentenceTransformer(CLIP_MODEL_NAME)
 # corpus_embeddings = pd.read_parquet(
 #         'data/patagonia_losGatos/metadata/patagonia_losGatos_embeddings.pq')
 
