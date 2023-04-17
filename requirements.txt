@@ -4,3 +4,4 @@ pandas==1.5.3
 pandas_stubs==1.2.0.35
 Pillow==9.5.0
 sentence_transformers==2.2.2
+pyarrow
