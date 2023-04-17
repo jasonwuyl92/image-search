@@ -3,14 +3,13 @@ import gradio as gr
 from sentence_transformers import SentenceTransformer, util
 import pandas as pd
 import os
-from PIL import Image
 
 CLIP_MODEL_NAME = "clip-ViT-L-14"
+model = SentenceTransformer(CLIP_MODEL_NAME)
+corpus_embeddings = pd.read_parquet(
+        'data/patagonia_losGatos/metadata/patagonia_losGatos_embeddings.pq')
 
 def search(input_img):
-    model = SentenceTransformer(CLIP_MODEL_NAME)
-    corpus_embeddings = pd.read_parquet(
-        'data/patagonia_losGatos/metadata/patagonia_losGatos_embeddings.pq')
     query_embedding = model.encode(input_img)
     top_results = util.semantic_search(query_embedding,
                                        np.vstack(list(corpus_embeddings['clip-ViT-L-14-embedding'])), top_k=3)[0]
