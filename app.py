@@ -36,5 +36,5 @@ iface = gr.Interface(
 )
 
 # Launch the Gradio interface
-iface.launch(share=True)
+iface.launch()
 
