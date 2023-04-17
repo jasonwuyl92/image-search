@@ -5,9 +5,9 @@ import pandas as pd
 import os
 
 CLIP_MODEL_NAME = "clip-ViT-B-16"
-model = SentenceTransformer(CLIP_MODEL_NAME)
-# corpus_embeddings = pd.read_parquet(
-#         'data/patagonia_losGatos/metadata/patagonia_losGatos_embeddings.pq')
+# model = SentenceTransformer(CLIP_MODEL_NAME)
+corpus_embeddings = pd.read_parquet(
+        'data/patagonia_losGatos/metadata/patagonia_losGatos_embeddings.pq')
 
 def search(input_img):
     query_embedding = model.encode(input_img)
