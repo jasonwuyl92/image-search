@@ -41,5 +41,5 @@ def get_image_embeddings(model_name, image):
         return model.encode(image)
     else:
         inputs = model_dict[model_name]['processor'](images=image, return_tensors="pt")
-        image_features = model.get_image_features(**inputs).numpy()[0]
+        image_features = model.get_image_features(**inputs).detach().numpy()[0]
         return image_features
