@@ -1,26 +1,25 @@
 import numpy as np
 import gradio as gr
-from sentence_transformers import SentenceTransformer, util
+from sentence_transformers import util as st_util
 import pandas as pd
 import os
+from utils import load_models, get_image_embeddings, img_folder
 
-CLIP_MODEL_NAME = "clip-ViT-L-14"
-model = SentenceTransformer(CLIP_MODEL_NAME)
-corpus_embeddings = pd.read_parquet(
-        'data/patagonia_losGatos/metadata/patagonia_losGatos_embeddings.pq')
+data_path = 'data/patagonia_losGatos/'
+
+cur_model_name = "sentence-transformer-clip-ViT-L-14"
 
 def search(input_img):
-    query_embedding = model.encode(input_img)
-    top_results = util.semantic_search(query_embedding,
-                                       np.vstack(list(corpus_embeddings['clip-ViT-L-14-embedding'])), top_k=3)[0]
-
-    img_folder = 'data/patagonia_losGatos/images'
+    query_embedding = get_image_embeddings(cur_model_name, input_img)
+    top_results = st_util.semantic_search(query_embedding,
+                                       np.vstack(list(corpus_embeddings[cur_model_name + '-embedding'])), top_k=3)[0]
     return [os.path.join(img_folder, corpus_embeddings.iloc[hit['corpus_id']]['name']) for hit in top_results]
 
 
-# Define the input and output components
-input_text = gr.inputs.Textbox(lines=2, placeholder="Enter some text...")
 
+load_models()
+corpus_embeddings = pd.read_parquet(
+    'data/patagonia_losGatos/metadata/patagonia_losGatos_embeddings.pq')
 image_output1 = gr.outputs.Image(label="Output Image 1", type='filepath')
 image_output2 = gr.outputs.Image(label="Output Image 2", type='filepath')
 image_output3 = gr.outputs.Image(label="Output Image 3", type='filepath')
@@ -36,4 +35,3 @@ iface = gr.Interface(
 
 # Launch the Gradio interface
 iface.launch(debug=True)
-
