@@ -3,13 +3,16 @@ import os
 from sentence_transformers import SentenceTransformer, util as st_util
 from transformers import CLIPModel, CLIPProcessor
 
+model_names = ["sentence-transformer-clip-ViT-L-14", "fashion", "openai-clip"]
+
 model_name_to_ids = {
     "sentence-transformer-clip-ViT-L-14": "clip-ViT-L-14",
     "fashion": "patrickjohncyh/fashion-clip",
     "openai-clip": "openai/clip-vit-base-patch32",
 }
 
-img_folder = 'data/patagonia_losGatos/images'
+data_path = 'data/patagonia_losGatos/'
+img_folder = os.path.join(data_path, 'images')
 
 model_dict = dict()
 
@@ -32,8 +35,9 @@ def load_models():
                 model_dict[model_name]['hf_dir'] = model_name_to_ids[model_name]
                 model_dict[model_name]['model'] = CLIPModel.from_pretrained(model_name_to_ids[model_name])
                 model_dict[model_name]['processor'] = CLIPProcessor.from_pretrained(model_name_to_ids[model_name])
-                # model_dict[model_id]['corpus_embeddings'] = pd.read_parquet(
-                #     f'data/patagonia_losGatos/metadata/{model_id}_embeddings.pq')
+
+load_models()
+
 
 def get_image_embeddings(model_name, image):
     model = model_dict[model_name]['model']
