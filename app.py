@@ -3,7 +3,7 @@ import gradio as gr
 from sentence_transformers import util as st_util
 import pandas as pd
 import os
-from utils import load_models, get_image_embeddings, \
+from utils import fs, load_models, get_image_embeddings, \
     get_image_path, model_names, download_images, generate_embeddings, get_embeddings_path, get_metadata_path
 from functools import partial
 import utils
@@ -16,8 +16,9 @@ def search(input_img, model_name):
     top_results = st_util.semantic_search(query_embedding,
                                           np.vstack(list(corpus_embeddings[model_name + '-embedding'])),
                                           top_k=int(NUM_OUTPUTS))[0]
-    return [os.path.join(get_image_path(),
-                      corpus_embeddings.iloc[hit['corpus_id']]['name']) for hit in top_results]
+    print (top_results)
+    return [utils.s3_path_to_image(fs, os.path.join(get_image_path(),
+                      corpus_embeddings.iloc[hit['corpus_id']]['name'])) for hit in top_results]
 
 
 load_models()
