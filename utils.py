@@ -130,17 +130,6 @@ def generate_embeddings():
     return embeddings_df
 
 
-
-
-# def get_immediate_subdirectories(a_dir):
-#     return [name for name in os.listdir(a_dir)
-#             if os.path.isdir(os.path.join(a_dir, name))]
-
-# def get_immediate_subdirectories(s3_path):
-#     s3_full_path = f"{S3_BUCKET}/{s3_path}"
-#     print ([obj.split('/')[-2] for obj in fs.glob(f"{s3_full_path}/*") if obj.endswith('/')])
-#     return [obj.split('/')[-2] for obj in fs.glob(f"{s3_full_path}/*") if obj.endswith('/')]
-
 def get_immediate_subdirectories(s3_path):
     return [obj.split('/')[-1] for obj in fs.glob(f"{s3_path}/*") if fs.isdir(obj)]
 
