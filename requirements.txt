@@ -10,3 +10,4 @@ tqdm
 streamlit
 s3fs
 requests
+pinecone-client

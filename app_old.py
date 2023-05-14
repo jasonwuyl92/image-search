@@ -3,13 +3,13 @@ import gradio as gr
 from sentence_transformers import util as st_util
 import pandas as pd
 import os
-from utils import load_models, get_image_embeddings, img_folder, model_name_to_ids, data_path, model_names
+from utils import load_models, get_image_embedding, img_folder, model_name_to_ids, data_path, model_names
 
 
 def search(input_img, num_outputs):
     results = []
     for model_name in model_names:
-        query_embedding = get_image_embeddings(model_name, input_img)
+        query_embedding = get_image_embedding(model_name, input_img)
         top_results = st_util.semantic_search(query_embedding,
                                            np.vstack(list(corpus_embeddings[model_name + '-embedding'])),
                                               top_k=int(num_outputs))[0]

@@ -2,7 +2,6 @@ from sentence_transformers import SentenceTransformer, util as st_util
 from transformers import CLIPModel, CLIPProcessor
 
 from PIL import Image
-import pandas as pd
 import requests
 import os
 import torch
@@ -10,9 +9,10 @@ torch.set_printoptions(precision=10)
 from tqdm import tqdm
 import s3fs
 from io import BytesIO
+import vector_db
 
-
-model_names = ["sentence-transformer-clip-ViT-L-14", "fashion", "openai-clip"]
+"sentence-transformer-clip-ViT-L-14"
+model_names = ["fashion", "openai-clip"]
 
 model_name_to_ids = {
     "sentence-transformer-clip-ViT-L-14": "clip-ViT-L-14",
@@ -65,7 +65,10 @@ def remove_all_files_from_s3_directory(s3_directory):
 
     # Remove each object
     for obj in objects:
-        fs.rm(obj)
+        try:
+            fs.rm(obj)
+        except:
+            print('Error removing file: ' + obj)
 
 def download_images(df, img_folder):
     remove_all_files_from_s3_directory(img_folder)
@@ -88,10 +91,16 @@ def load_models():
                 model_dict[model_name]['model'] = CLIPModel.from_pretrained(model_name_to_ids[model_name])
                 model_dict[model_name]['processor'] = CLIPProcessor.from_pretrained(model_name_to_ids[model_name])
 
-load_models()
+
+if len(model_dict) == 0:
+    print('Loading models...')
+    load_models()
 
 
-def get_image_embeddings(model_name, image):
+def get_image_embedding(model_name, image):
+    """
+    Takes an image as input and returns an embedding vector.
+    """
     model = model_dict[model_name]['model']
     if model_name.startswith('sentence-transformer'):
         return model.encode(image)
@@ -115,19 +124,21 @@ def s3_path_to_image(fs, s3_path):
         img = Image.open(image_data)
         return img
 
-def generate_embeddings():
-    embeddings_df = pd.DataFrame()
-
+def generate_and_save_embeddings():
     # Get image embeddings
     with torch.no_grad():
         for fp in tqdm(fs.ls(get_image_path()), desc="Generate embeddings for Images"):
             if fp.endswith('.jpg'):
-                new_row = {'name': fp.split('/')[-1]}
+                name = fp.split('/')[-1]
                 for model_name in model_name_to_ids.keys():
-                    new_row[f'{model_name}-embedding'] = get_image_embeddings(
-                        model_name, s3_path_to_image(fs, 's3://' + fp))
-                embeddings_df = embeddings_df.append(new_row, ignore_index=True)
-    return embeddings_df
+                    s3_path = 's3://' + fp
+                    vector_db.add_image_embedding_to_db(
+                        embedding=get_image_embedding(model_name, s3_path_to_image(fs, s3_path)),
+                        model_name=model_name,
+                        dataset_name=cur_dataset,
+                        path_to_image=s3_path,
+                        image_name=name,
+                    )
 
 
 def get_immediate_subdirectories(s3_path):
