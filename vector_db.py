@@ -33,5 +33,5 @@ def query_embeddings_db(query_embedding, dataset_name, model_name, top_k=4):
     }[len(query_embedding)]
     return index.query(vector=query_embedding,
                        top_k=top_k,
-                       namespaces=DEV_NAMESPACE,
+                       namespace=DEV_NAMESPACE,
                        include_metadata=True)

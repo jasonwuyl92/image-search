@@ -7,7 +7,7 @@ import pandas as pd
 import utils
 import vector_db
 from utils import get_image_embedding, \
-    get_image_path, model_names, download_images, generate_and_save_embeddings, get_metadata_path
+    get_image_path, model_names, download_images, generate_and_save_embeddings, get_metadata_path, url_to_image
 
 NUM_OUTPUTS = 4
 
@@ -16,7 +16,8 @@ def search(input_img, model_name):
     query_embedding = get_image_embedding(model_name, input_img).tolist()
     top_results = vector_db.query_embeddings_db(query_embedding=query_embedding,
                                                 dataset_name=utils.cur_dataset, model_name=model_name)
-    return [utils.s3_path_to_image(utils.fs, hit['metadata']['path']) for hit in top_results['matches']]
+    print (top_results)
+    return [utils.url_to_image(hit['metadata']['mainphotourl']) for hit in top_results['matches']]
 
 
 def read_tsv_temporary_file(temp_file_wrapper):

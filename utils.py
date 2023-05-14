@@ -157,3 +157,13 @@ def refresh_all_datasets():
     global all_datasets
     all_datasets = get_immediate_subdirectories(ROOT_DATA_PATH)
     print(f"Refreshing all datasets: {all_datasets}")
+
+def url_to_image(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        img = Image.open(BytesIO(response.content))
+        return img
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching image from URL: {url}")
+        return None
