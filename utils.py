@@ -12,7 +12,8 @@ from io import BytesIO
 import vector_db
 
 "sentence-transformer-clip-ViT-L-14"
-model_names = ["fashion", "openai-clip"]
+"openai-clip"
+model_names = ["fashion"]
 
 model_name_to_ids = {
     "sentence-transformer-clip-ViT-L-14": "clip-ViT-L-14",

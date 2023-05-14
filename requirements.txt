@@ -1,4 +1,4 @@
-gradio==3.27.0
+gradio==3.30.0
 numpy==1.23.5
 pandas==1.5.3
 pandas_stubs==1.2.0.35
